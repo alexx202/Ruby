@@ -5,14 +5,8 @@ b = gets.to_f
 puts "Пожалуйста введите длину третьей стороны треугольника"
 c = gets.to_f
 
-if a > b && a > c && (a ** 2  == b ** 2 + c ** 2)
-	triangle = true
-elsif b > a && b > c && (b ** 2  == a ** 2 + c ** 2)
-	triangle = true
-elsif c > a && c > b && (c ** 2 == a ** 2 + b ** 2)
-	triangle = true
-end
-
+array = [a, b, c].sort
+triangle = true if array[0]**2 + array[1]**2 == array[2]**2
 
 if a == b && b == c
 	puts "Треугольник равносторонний"
@@ -22,9 +16,6 @@ elsif triangle
 	puts "Треугольник прямоугольный"
 elsif a == b || b == c || a == c
 	puts "Треугольник равнобедренный"
-else 
+else
 	puts "Треугольник обычный"
 end
-
-
-	
