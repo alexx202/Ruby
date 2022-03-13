@@ -1,5 +1,4 @@
 class Station
-
   attr_reader :name, :list_of_train
 
   def initialize(name)
@@ -15,13 +14,12 @@ class Station
     list_of_train.delete(train)
   end
 
-  def show_type_of_trains
-    list_of_train.each { |train| puts "#{train.name}: #{train.type}" }
+  def type_of_trains(type)
+    list_of_train.select { |train| train.type == type }
   end
 end
 
 class Route
-
   attr_reader :list_of_station
 
   def initialize(first_station, last_station)
@@ -42,9 +40,8 @@ class Route
 end
 
 class Train
-
-  attr_accessor :speed, :route_of_train, :location
-  attr_reader :name, :type, :number_of_carriages
+  attr_accessor :speed, :route_of_train, :location, :number_of_carriages
+  attr_reader :name, :type
 
   def initialize(name, type, number_of_carriages)
     @name = name
@@ -65,31 +62,33 @@ class Train
   end
 
   def add_route(route)
-    self.route_of_train = route.list_of_station
-    route.list_of_station[0].take_train(self)
-    self.location = route.list_of_station[0]
-  end
-
-  def location=(station)
-    @location = station
+    self.route_of_train = route
+    self.location = 0
+    current_station.take_train(self)
   end
 
   def go_ahead
-    route_of_train[route_of_train.index(location) + 1].take_train(self)
-    self.location = route_of_train[route_of_train.index(location) + 1]
-    self.location.send_train(self)
+    current_station.send_train(self)
+    next_station.take_train(self)
+    self.location += 1
   end
 
   def go_back
-    route_of_train[route_of_train.index(location) - 1].take_train(self)
-    self.location = route_of_train[route_of_train.index(location) - 1]
-    self.location.send_train(self)
+    current_station.send_train(self)
+    previous_station.take_train(self)
+    self.location -= 1
   end
 
-  def show_around_station
-    puts "Следующая станция: #{route_of_train[route_of_train.index(location) + 1]}"
-    puts "Текущая станция: #{self.location}"
-    puts "Прошлая станция: #{route_of_train[route_of_train.index(location) - 1]}"
+  def previous_station
+    route_of_train.list_of_station[location - 1]
+  end
+
+  def current_station
+    route_of_train.list_of_station[location]
+  end
+
+  def next_station
+    route_of_train.list_of_station[location + 1]
   end
 end
 
@@ -113,6 +112,12 @@ train3 = Train.new("444", "passenger", 0)
 
 puts train1.speed = 50
 puts train1.stop
+train1.add_carriage
+puts train1.number_of_carriages
+train1.add_carriage
+puts train1.number_of_carriages
+train1.delete_carriage
+puts train1.number_of_carriages
 train1.add_route(route1)
 puts "-" * 60
 train1.go_ahead
@@ -123,5 +128,14 @@ puts train1.location
 puts "-" * 60
 train1.go_back
 puts train1.location
+puts "=" * 60
+puts train1.current_station
+puts train1.next_station
+puts train1.previous_station
+puts "=" * 60
+train2.add_route(route1)
+puts train2.location
 puts "-" * 60
-train1.show_around_station
+train3.add_route(route1)
+puts st1.type_of_trains("passenger")
+puts st1.type_of_trains("freight")
