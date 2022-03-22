@@ -71,7 +71,6 @@ class Train
     @speed = 0
     @carriages = []
     @@trains[name] = self
-    self.class.create_count
     register_instance
   end
 end

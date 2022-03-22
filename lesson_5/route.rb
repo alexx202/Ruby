@@ -5,7 +5,6 @@ class Route
 
   def initialize(first_station, last_station)
     @list_of_station = [first_station, last_station]
-    self.class.create_count
     register_instance
   end
 

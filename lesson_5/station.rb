@@ -13,7 +13,6 @@ class Station
     @name = name
     @list_of_train = []
     @@stations << self
-    self.class.create_count
     register_instance
   end
 
