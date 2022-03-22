@@ -55,6 +55,8 @@ class Interface
     end
   end
 
+  private
+
   def make_station
     puts "Какое имя хотите задать станции?"
     name = gets.strip
