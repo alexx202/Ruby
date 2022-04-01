@@ -10,25 +10,7 @@ class Interface
     @carriages = {}
   end
 
-  def interface
-    puts 'Здравствуйте. Введите число соответствующее тому что вы хотите сделать.',
-         '0. Выйти',
-         '1. Создать станцию',
-         '2. Создать поезд',
-         '3. Создать маршрут',
-         '4. Добавить станцию в маршрут',
-         '5. Удалить станцию из маршрута',
-         '6. Назначить маршрут поезду',
-         '7. Добавить вагон поезду',
-         '8. Отцепить вагон от поезда',
-         '9. Переместить поезду по маршруту',
-         '10. Просмотреть список станций',
-         '11. Просмотреть список поездов на станции',
-         '12. Создать вагон',
-         '13. Просмотреть список вагонов у поезда',
-         '14. Занять место или обьем в вагоне'
-  end
-
+  # rubocop:disable Metrics
   def show_interface
     interface
 
@@ -70,9 +52,31 @@ class Interface
       end
     end
   end
+  # rubocop:enable Metrics
 
   private
 
+  # rubocop:disable Metrics/MethodLength:
+  def interface
+    puts 'Здравствуйте. Введите число соответствующее тому что вы хотите сделать.',
+         '0. Выйти',
+         '1. Создать станцию',
+         '2. Создать поезд',
+         '3. Создать маршрут',
+         '4. Добавить станцию в маршрут',
+         '5. Удалить станцию из маршрута',
+         '6. Назначить маршрут поезду',
+         '7. Добавить вагон поезду',
+         '8. Отцепить вагон от поезда',
+         '9. Переместить поезду по маршруту',
+         '10. Просмотреть список станций',
+         '11. Просмотреть список поездов на станции',
+         '12. Создать вагон',
+         '13. Просмотреть список вагонов у поезда',
+         '14. Занять место или обьем в вагоне'
+  end
+
+  # rubocop:enable Metrics/MethodLength:
   def make_station
     puts 'Какое имя хотите задать станции?'
     name = gets.strip
@@ -85,20 +89,23 @@ class Interface
 
   def made_train
     puts 'Вы хотите создать пассажирский поезд или грузовой? Нажмите 1 если пассажирский или 2 если грузовой.'
-    a = gets.to_i
+    input = gets.to_i
     puts 'Введите номер поезда'
-    case a
-    when 1
-      name = gets.strip
-      train[name] = PassengerTrain.new(name)
-    when 2
-      name = gets.strip
-      train[name] = CargoTrain.new(name)
-    end
+    input == 1 ? made_passenger_train : made_cargo_train
     puts "Создан поезд #{name}"
   rescue RuntimeError => e
     puts e.message
     retry
+  end
+
+  def made_cargo_train
+    name = gets.strip
+    train[name] = PassengerTrain.new(name)
+  end
+
+  def made_passenger_train
+    name = gets.strip
+    train[name] = CargoTrain.new(name)
   end
 
   def made_route
@@ -159,14 +166,17 @@ class Interface
     name = gets.strip
     puts 'Чтобы поезд проехал вперед нажмите 1, назад нажмите 2'
     a = gets.to_i
-    case a
-    when 1
-      train[name].go_ahead
-      puts "Поезд #{name} проехал вперед"
-    when 2
-      train[name].go_back
-      puts "Поезд #{name} проехал назад"
-    end
+    a == 1 ? train_go_ahead(name) : train_go_back(name)
+  end
+
+  def train_go_ahead(name)
+    train[name].go_ahead
+    puts "Поезд #{name} проехал вперед"
+  end
+
+  def train_go_back(name)
+    train[name].go_back
+    puts "Поезд #{name} проехал назад"
   end
 
   def show_list_of_station
@@ -188,12 +198,7 @@ class Interface
   def made_carriage
     puts 'Нажмите 1 чтобы создать пассажирский вагон или 2 чтобы создать грузовой вагон'
     input = gets.to_i
-    case input
-    when 1
-      create_pass_carriage
-    when 2
-      create_cargo_carriage
-    end
+    input == 1 ? create_pass_carriage : create_cargo_carriage
   rescue RuntimeError => e
     puts e.message
     retry
@@ -222,14 +227,18 @@ class Interface
     name = gets.strip
     train[name].each_carriage do |carriage|
       puts "Номер вагона: #{carriage.number_of_carriage}, тип: #{carriage.type}."
-      if carriage.type == :passenger
-        puts "Количество свободных мест: #{carriage.number_of_empty_seats} ",
-             "количество занятых мест: #{carriage.number_of_busy_seats}"
-      else
-        puts "Количество свободного объема: #{carriage.empty_capacity} ",
-             "количество занятого объема #{carriage.busy.capacity}"
-      end
+      carriage.type == :passenger ? show_pass_carriage : show_cargo_carriage
     end
+  end
+
+  def show_pass_carriage
+    puts "Количество свободных мест: #{carriage.number_of_empty_seats} ",
+         "количество занятых мест: #{carriage.number_of_busy_seats}"
+  end
+
+  def show_cargo_carriage
+    puts "Количество свободного объема: #{carriage.empty_capacity} ",
+         "количество занятого объема #{carriage.busy.capacity}"
   end
 
   def add_in_carriage
