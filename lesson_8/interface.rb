@@ -92,20 +92,21 @@ class Interface
     input = gets.to_i
     puts 'Введите номер поезда'
     input == 1 ? made_passenger_train : made_cargo_train
-    puts "Создан поезд #{name}"
   rescue RuntimeError => e
     puts e.message
     retry
   end
 
-  def made_cargo_train
-    name = gets.strip
-    train[name] = PassengerTrain.new(name)
-  end
-
   def made_passenger_train
     name = gets.strip
+    train[name] = PassengerTrain.new(name)
+    puts "Создан пассажирский поезд #{name}"
+  end
+
+  def made_cargo_train
+    name = gets.strip
     train[name] = CargoTrain.new(name)
+    puts "Создан грузовой поезд #{name}"
   end
 
   def made_route
@@ -227,16 +228,16 @@ class Interface
     name = gets.strip
     train[name].each_carriage do |carriage|
       puts "Номер вагона: #{carriage.number_of_carriage}, тип: #{carriage.type}."
-      carriage.type == :passenger ? show_pass_carriage : show_cargo_carriage
+      carriage.type == :passenger ? show_pass_carriage(carriage) : show_cargo_carriage(carriage)
     end
   end
 
-  def show_pass_carriage
+  def show_pass_carriage(carriage)
     puts "Количество свободных мест: #{carriage.number_of_empty_seats} ",
          "количество занятых мест: #{carriage.number_of_busy_seats}"
   end
 
-  def show_cargo_carriage
+  def show_cargo_carriage(carriage)
     puts "Количество свободного объема: #{carriage.empty_capacity} ",
          "количество занятого объема #{carriage.busy.capacity}"
   end
